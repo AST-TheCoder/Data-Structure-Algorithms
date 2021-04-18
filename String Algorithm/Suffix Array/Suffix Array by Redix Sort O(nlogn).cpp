@@ -14,76 +14,70 @@ using namespace __gnu_pbds;
 template <typename T>
 using ordered_set = tree<T, null_type, less_equal<T>, rb_tree_tag, tree_order_statistics_node_update>;
 
-vector<pair<pair<ll,ll>,ll>> redix_sort(vector<pair<pair<ll,ll>,ll>> a){
-	ll len=a.size();
-	queue<ll> cnt[len];
-	vector<pair<pair<ll,ll>,ll>> temp;
+pair<pair<ll,ll>,ll> a[400007];
+ll cnt[400007];
+pair<pair<ll,ll>,ll> temp[400007];
+void redix_sort(ll len){
+    memset(cnt,0,sizeof(cnt));
+    for(ll i=0;i<len;i++)
+        cnt[a[i].first.second]++;
+    for(ll i=1;i<len;i++)
+        cnt[i]+=cnt[i-1];
+    for(ll i=len-1;i>=0;i--){
+        cnt[a[i].first.second]--;
+        temp[cnt[a[i].first.second]]=a[i];
+    }
 
-	for(ll i=0;i<len;i++)
-		cnt[a[i].first.second].push(i);
-	for(ll i=0;i<len;i++){
-		while(!cnt[i].empty()){
-			ll id=cnt[i].front();
-			cnt[i].pop();
-			temp.pb(a[id]);
-		}
-	}
-	a=temp;
-	temp.clear();
-
-	for(ll i=0;i<len;i++)
-		cnt[a[i].first.first].push(i);
-	for(ll i=0;i<len;i++){
-		while(!cnt[i].empty()){
-			ll id=cnt[i].front();
-			cnt[i].pop();
-			temp.pb(a[id]);
-		}
-	}
-
-	return temp;
+    memset(cnt,0,sizeof(cnt));
+    for(ll i=0;i<len;i++)
+        cnt[temp[i].first.first]++;
+    for(ll i=1;i<len;i++)
+        cnt[i]+=cnt[i-1];
+    for(ll i=len-1;i>=0;i--){
+        cnt[temp[i].first.first]--;
+        a[cnt[temp[i].first.first]]=temp[i];
+    }
 }
 
 int main()
-{	
+{   
 
-	string s;
-	cin>>s;
+    char s[400007];
+    scanf("%s",s);
+ 
+    ll len=strlen(s)+1;
+    s[len-1]='$';
 
-	s+='$';
-	ll len=s.size();
+    ll pos[len];
 
-	ll pos[s.size()];
+    vector<pair<ll,ll>> temp;
+    for(ll i=0;i<len;i++)
+        temp.pb({(ll)s[i],i});
+    sort(all(temp));
+    pos[temp[0].second]=0;
+    for(ll i=1,ok=0;i<len;i++){
+        if(temp[i].first!=temp[i-1].first) ok++;
+        pos[temp[i].second]=ok;
+    }
 
-	vector<pair<ll,ll>> temp;
-	for(ll i=0;i<len;i++)
-		temp.pb({(ll)s[i],i});
-	sort(all(temp));
-	pos[temp[0].second]=0;
-	for(ll i=1,ok=0;i<len;i++){
-		if(temp[i].first!=temp[i-1].first) ok++;
-		pos[temp[i].second]=ok;
-	}
+    ll ans[len];
+    for(ll k=1;k<=len;){
+        k*=2;
+        for(ll i=0;i<len;i++)
+            a[i]={{pos[i],pos[(i+k/2)%len]},i};
+        redix_sort(len);
+        pos[a[0].second]=0;
+        ans[0]=a[0].second;
+        for(ll i=1,ok=0;i<len;i++){
+            if(a[i].first!=a[i-1].first) ok++;
+            pos[a[i].second]=ok;
+            ans[i]=a[i].second;
+        }
+    }
 
-	ll ans[len];
-	for(ll k=1;k<=len;){
-		k*=2;
-		vector<pair<pair<ll,ll>,ll>> a;
-		for(ll i=0;i<len;i++)
-			a.pb({{pos[i],pos[(i+k/2)%len]},i});
-		a=redix_sort(a);
-		pos[a[0].second]=0;
-		ans[0]=a[0].second;
-		for(ll i=1,ok=0;i<len;i++){
-			if(a[i].first!=a[i-1].first) ok++;
-			pos[a[i].second]=ok;
-			ans[i]=a[i].second;
-		}
-	}
+    for(ll i=0;i<len;i++)
+        printf("%lli ",ans[i]);
+    printf("\n");
 
-	for(ll i=0;i<len;i++)
-		cout<<ans[i]<<" ";
-	cout<<endl;
-
-	return 0;
+    return 0;
 }
