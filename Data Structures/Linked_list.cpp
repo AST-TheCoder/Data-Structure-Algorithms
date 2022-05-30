@@ -21,6 +21,7 @@ class Node{
         Node* next=NULL;
 }; 
 Node* head = new Node();
+Node* tail = head;
 
 void addVal(int x){
     Node* node=head;
@@ -31,6 +32,7 @@ void addVal(int x){
     newNode->prev=node;
 
     node->next=newNode;
+    tail=newNode;
 }
 
 void deleteVal(int x){
@@ -41,8 +43,14 @@ void deleteVal(int x){
         return;
     }
 
-    node->prev->next=node->next;
-    node->next->prev=node->prev;
+    if(node==tail){
+        tail=node->prev;
+        node->prev->next=NULL;
+    }
+    else{
+        node->prev->next=node->next;
+        node->next->prev=node->prev;
+    }
 }
 
 void printList(){
