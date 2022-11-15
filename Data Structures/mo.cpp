@@ -50,12 +50,12 @@ int main()
         p.push({{q[i].first.second,q[i].first.first},q[i].second});
         j++;
     }
-    ll c=1;
+    ll c=0;
     while(!p.empty()){
         pair<pair<ll,ll>,ll> temp=p.top();
         p.pop();
         c++;
-        q[n-c]={{temp.first.second,temp.first.first},temp.second};
+        q[m-c]={{temp.first.second,temp.first.first},temp.second};
     }
 
     for(ll i=0;i<m;i++) cout<<q[i].first.first<<" "<<q[i].first.second<<" "<<q[i].second<<endl;
